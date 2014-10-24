@@ -9,3 +9,4 @@ app.config['DB'] = ''
 app.config.from_envvar('APP_CFG')
 
 from . import views
+from . import utils
