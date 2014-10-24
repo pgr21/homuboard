@@ -2,10 +2,6 @@
 
 {% block body %}
 
-{% if post.user_id == user.id %}
-<a href="{{url_for('post_edit', id=post.id)}}">Edit</a>
-{% endif %}
-
 <table>
     <tr>
         <th>Date</th>
@@ -21,6 +17,14 @@
     </tr>
 </table>
 
-{{post.text|nl2br}}
+<div class="post">
+    {{post.text|nl2br}}
+</div>
+
+{% if post.user_id == user.id %}
+<div class="tools">
+    <a href="{{url_for('post_edit', id=post.id)}}">Edit</a>
+</div>
+{% endif %}
 
 {% endblock %}
