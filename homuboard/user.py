@@ -10,7 +10,7 @@ def get_user():
 
     with db.cursor() as cur:
         cur.execute('''
-            SELECT name
+            SELECT id, name
             FROM "user"
             WHERE id=%s
         ''', [user_id])

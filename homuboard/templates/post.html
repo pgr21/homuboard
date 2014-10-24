@@ -2,6 +2,10 @@
 
 {% block body %}
 
+{% if post.user_id == user.id %}
+<a href="{{url_for('post_edit', id=post.id)}}">Edit</a>
+{% endif %}
+
 <table>
     <tr>
         <th>Date</th>

@@ -48,3 +48,13 @@
     background-color: yellow;
     padding: 10px;
 }
+
+.edit input, .edit textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
+.edit textarea {
+    height: 400px;
+}

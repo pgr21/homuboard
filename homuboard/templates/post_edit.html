@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{page_name}}
+{% endblock %}
+
+{% block body %}
+
+<div class="edit">
+    <form method="post" action="{{request.path}}">
+        <input type="text" name="name" value="{{post.name}}">
+        <textarea name="text">{{post.text}}</textarea>
+        <input type="submit" value="Save">
+    </form>
+</div>
+
+{% endblock %}
