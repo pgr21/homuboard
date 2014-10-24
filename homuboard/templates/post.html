@@ -27,4 +27,18 @@
 </div>
 {% endif %}
 
+{% for comm in comms %}
+<div class="comm">
+    <p>by {{comm.user_name}} at {{comm.ts}}{% if comm.user_id == user.id %} / <a href="{{url_for('comm_edit', id=comm.id)}}">Edit</a>{% endif %}</p>
+    {{comm.text|nl2br}}
+</div>
+{% endfor %}
+
+<div class="edit comm">
+    <form method="post" action="{{url_for('comm_edit', post_id=post.id)}}">
+        <textarea name="text"></textarea>
+        <input type="submit" value="Save">
+    </form>
+</div>
+
 {% endblock %}

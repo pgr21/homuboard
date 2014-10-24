@@ -6,10 +6,9 @@
 
 {% block body %}
 
-<div class="edit post">
+<div class="edit comm">
     <form method="post" action="{{request.path}}">
-        <input type="text" name="name" value="{{post.name}}">
-        <textarea name="text">{{post.text}}</textarea>
+        <textarea name="text">{{comm.text}}</textarea>
         <input type="submit" value="Save">
     </form>
 </div>

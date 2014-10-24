@@ -55,8 +55,16 @@
     margin-bottom: 5px;
 }
 
-.edit textarea {
+.edit.post textarea {
     height: 400px;
+}
+
+.edit.comm textarea {
+    height: 100px;
+}
+
+.edit.comm {
+    margin-top: 20px;
 }
 
 .post {

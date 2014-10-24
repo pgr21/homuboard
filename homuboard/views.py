@@ -69,7 +69,16 @@ def post(id):
 
         post = cur.fetchone()
 
-    return render_template('post.html', post=post)
+        cur.execute('''
+            SELECT comm.id, "user".name AS user_name, comm.text, comm.ts, user_id
+            FROM comm JOIN "user" ON comm.user_id = "user".id
+            WHERE post_id = %s
+            ORDER BY ts
+        ''', [id])
+
+        comms = cur.fetchall()
+
+    return render_template('post.html', post=post, comms=comms)
 
 @app.route('/post/<id>/edit/', methods=['GET', 'POST'])
 @app.route('/board/<board_id>/new/', methods=['GET', 'POST'])
@@ -133,16 +142,10 @@ def post_edit(id=None, board_id=None):
             return redirect(url_for('post', id=id))
 
     else:
-        if not id:
-            post_form = {
-                'id': 0,
-                'name': '',
-                'text': '',
-            }
-        else:
+        if id:
             with db.cursor() as cur:
                 cur.execute('''
-                    SELECT id, name, text
+                    SELECT name, text
                     FROM post
                     WHERE id=%s
                 ''', [id])
@@ -152,5 +155,79 @@ def post_edit(id=None, board_id=None):
                 if not post_form:
                     flash('Post not exists')
                     return redirect(url_for('index'))
+        else:
+            post_form = {
+                'name': '',
+                'text': '',
+            }
 
     return render_template('post_edit.html', post=post_form)
+
+@app.route('/comm/<id>/edit/', methods=['GET', 'POST'])
+@app.route('/post/<post_id>/new/', methods=['GET', 'POST'])
+def comm_edit(id=None, post_id=None):
+    if request.method == 'POST':
+        comm_form = {
+            'id': id,
+            'text': request.form['text'],
+        }
+
+        if not user:
+            flash('Not logged in')
+
+        elif not comm_form['text']:
+            flash('Insufficient input')
+
+        else:
+            with db.cursor() as cur:
+                if id:
+                    cur.execute('''
+                        SELECT user_id, post_id
+                        FROM comm
+                        WHERE id = %s
+                    ''', [id])
+
+                    comm = cur.fetchone()
+
+                    post_id = comm['post_id']
+
+                    if comm['user_id'] != user['id']:
+                        flash('Insufficient permission')
+
+                    else:
+                        cur.execute('''
+                            UPDATE comm
+                            SET text = %s
+                            WHERE id = %s
+                        ''', [comm_form['text'], id])
+
+                        db.commit()
+
+                else:
+                    cur.execute('''
+                        INSERT INTO comm
+                        (text, user_id, ts, post_id)
+                        VALUES (%s, %s, %s, %s)
+                    ''', [comm_form['text'], user['id'], datetime.now(), post_id])
+
+                    db.commit()
+
+            return redirect(url_for('post', id=post_id))
+
+    else:
+        if id:
+            with db.cursor() as cur:
+                cur.execute('''
+                    SELECT text
+                    FROM comm
+                    WHERE id = %s
+                ''', [id])
+
+                comm_form = cur.fetchone()
+
+        else:
+            comm_form = {
+                'text': '',
+            }
+
+    return render_template('comm_edit.html', comm=comm_form)
