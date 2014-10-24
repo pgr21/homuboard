@@ -70,15 +70,35 @@ def post(id):
         post = cur.fetchone()
 
         cur.execute('''
-            SELECT comm.id, "user".name AS user_name, comm.text, comm.ts, user_id
+            SELECT comm.id, "user".name AS user_name, comm.text, comm.ts, user_id, level
             FROM comm JOIN "user" ON comm.user_id = "user".id
             WHERE post_id = %s
-            ORDER BY ts
+            ORDER BY sort_key
         ''', [id])
 
-        comms = cur.fetchall()
+        comms = []
+        level = 0
+        for row in cur:
+            comm = dict(row)
 
-    return render_template('post.html', post=post, comms=comms)
+            gap = comm['level'] - level
+            if gap:
+                level = comm['level']
+
+                indents = []
+
+                if gap > 0:
+                    indents.append('<div class="comm_indent">' * gap)
+                else:
+                    indents.append('</div>' * -gap)
+
+                comm['html'] = ''.join(indents)
+
+            comms.append(comm)
+
+        comms_html = '</div>' * level
+
+    return render_template('post.html', post=post, comms=comms, comms_html=comms_html)
 
 @app.route('/post/<id>/edit/', methods=['GET', 'POST'])
 @app.route('/board/<board_id>/new/', methods=['GET', 'POST'])
@@ -163,6 +183,9 @@ def post_edit(id=None, board_id=None):
 
     return render_template('post_edit.html', post=post_form)
 
+def get_comm_sort_code(num):
+    return chr(num)
+
 @app.route('/comm/<id>/edit/', methods=['GET', 'POST'])
 @app.route('/post/<post_id>/new/', methods=['GET', 'POST'])
 def comm_edit(id=None, post_id=None):
@@ -203,16 +226,61 @@ def comm_edit(id=None, post_id=None):
 
                         db.commit()
 
+                        return redirect(url_for('post', id=post_id))
+
                 else:
-                    cur.execute('''
-                        INSERT INTO comm
-                        (text, user_id, ts, post_id)
-                        VALUES (%s, %s, %s, %s)
-                    ''', [comm_form['text'], user['id'], datetime.now(), post_id])
+                    level = None
 
-                    db.commit()
+                    parent_id = request.args.get('parent_id')
+                    if parent_id:
+                        cur.execute('''
+                            SELECT level, sort_key, child_cnt
+                            FROM comm
+                            WHERE id = %s
+                        ''', [parent_id])
 
-            return redirect(url_for('post', id=post_id))
+                        parent_comm = cur.fetchone()
+                        if not parent_comm:
+                            flash('Parent comment not found')
+                        else:
+                            cur.execute('''
+                                UPDATE comm
+                                SET child_cnt = child_cnt + 1
+                                WHERE id = %s
+                            ''', [parent_id])
+
+                            level = parent_comm['level'] + 1
+                            sort_key = parent_comm['sort_key'] + '.' + get_comm_sort_code(parent_comm['child_cnt'] + 1)
+                    else:
+                        cur.execute('''
+                            SELECT child_cnt
+                            FROM post
+                            WHERE id = %s
+                        ''', [post_id])
+
+                        post = cur.fetchone()
+                        if not post:
+                            flash('Post not found')
+                        else:
+                            cur.execute('''
+                                UPDATE post
+                                SET child_cnt = child_cnt + 1
+                                WHERE id = %s
+                            ''', [post_id])
+
+                            level = 0
+                            sort_key = get_comm_sort_code(post['child_cnt'] + 1)
+
+                    if level is not None:
+                        cur.execute('''
+                            INSERT INTO comm
+                            (text, user_id, ts, post_id, level, sort_key)
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                        ''', [comm_form['text'], user['id'], datetime.now(), post_id, level, sort_key])
+
+                        db.commit()
+
+                        return redirect(url_for('post', id=post_id))
 
     else:
         if id:

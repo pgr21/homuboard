@@ -7,7 +7,7 @@
 {% block body %}
 
 <div class="edit comm">
-    <form method="post" action="{{request.path}}">
+    <form method="post" action="{{request.full_path}}">
         <textarea name="text">{{comm.text}}</textarea>
         <input type="submit" value="Save">
     </form>

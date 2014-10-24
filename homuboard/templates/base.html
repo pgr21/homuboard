@@ -13,10 +13,10 @@
 
         <div id="left_menu">
             {% if user %}
-            <a href="{{url_for('logout', next=request.path)}}">Log out</a>
+            <a href="{{url_for('logout', next=request.full_path)}}">Log out</a>
             {% else %}
             <form method="post" action="{{url_for('login')}}" id="login">
-                <input type="hidden" name="next" value="{{request.path}}">
+                <input type="hidden" name="next" value="{{request.full_path}}">
                 <input type="text" name="username">
                 <input type="password" name="password">
                 <input type="submit" value="Log in">

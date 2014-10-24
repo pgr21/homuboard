@@ -28,11 +28,19 @@
 {% endif %}
 
 {% for comm in comms %}
+{{comm.html|safe}}
 <div class="comm">
-    <p>by {{comm.user_name}} at {{comm.ts}}{% if comm.user_id == user.id %} / <a href="{{url_for('comm_edit', id=comm.id)}}">Edit</a>{% endif %}</p>
+    <p>
+        by {{comm.user_name}} at {{comm.ts}}
+        / <a href="{{url_for('comm_edit', post_id=post.id, parent_id=comm.id)}}">Reply</a>
+        {% if comm.user_id == user.id %}
+        / <a href="{{url_for('comm_edit', id=comm.id)}}">Edit</a>
+        {% endif %}
+    </p>
     {{comm.text|nl2br}}
 </div>
 {% endfor %}
+{{comms_html|safe}}
 
 <div class="edit comm">
     <form method="post" action="{{url_for('comm_edit', post_id=post.id)}}">

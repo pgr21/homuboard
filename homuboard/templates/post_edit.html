@@ -7,7 +7,7 @@
 {% block body %}
 
 <div class="edit post">
-    <form method="post" action="{{request.path}}">
+    <form method="post" action="{{request.full_path}}">
         <input type="text" name="name" value="{{post.name}}">
         <textarea name="text">{{post.text}}</textarea>
         <input type="submit" value="Save">
