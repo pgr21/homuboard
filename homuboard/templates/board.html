@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{name}}
+{% endblock %}
+
+{% block body %}
+
+<table>
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Title</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Views</th>
+            <th>Votes</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for post in posts %}
+        <tr>
+            <td>{{post.id}}</td>
+            <td><a href="{{url_for('post', id=post.id)}}">{{post.name}}</a></td>
+            <td>{{post.user_name}}</td>
+            <td>{{post.ts}}</td>
+            <td>{{post.views}}</td>
+            <td>{{post.votes}}</td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

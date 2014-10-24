@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<table>
+    <tr>
+        <th>Date</th>
+        <td>{{post.ts}}</td>
+    </tr>
+    <tr>
+        <th>User</th>
+        <td>{{post.user_name}}</td>
+    </tr>
+    <tr>
+        <th>Title</th>
+        <td>{{post.name}}</td>
+    </tr>
+</table>
+
+{{post.text}}
+
+{% endblock %}

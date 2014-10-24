@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width">
+        <title>{% block title %}{% endblock %} - {{site_name}}</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='base.css')}}">
+    </head>
+    <body>
+        <div id="top_menu">
+            <a href="{{url_for('index')}}">Home</a>
+            <div class="clear"></div>
+        </div>
+
+        <div id="left_menu">
+            {% if user %}
+            <a href="{{url_for('logout', next=request.path)}}">Log out</a>
+            {% else %}
+            <form method="post" action="{{url_for('login')}}" id="login">
+                <input type="hidden" name="next" value="{{request.path}}">
+                <input type="text" name="username">
+                <input type="password" name="password">
+                <input type="submit" value="Log in">
+            </form>
+            {% endif %}
+
+            <div>
+                <a href="{{url_for('board', id='1')}}">General Discussion</a>
+            </div>
+        </div>
+
+        <div id="body">
+{% for cate, msg in get_flashed_messages(with_categories=True) %}
+    <p class="msg">{{msg}}</p>
+{% endfor %}
+
+{% block body %}
+{% endblock %}
+        </div>
+    </body>
+</html>
