@@ -124,3 +124,15 @@ h1 {
 .text {
     line-height: 150%;
 }
+
+.recent_posts {
+    line-height: 150%;
+}
+
+.board_name {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    margin: 15px 0;
+    display: block;
+}

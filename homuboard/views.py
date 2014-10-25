@@ -34,7 +34,27 @@ def inject_env():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    with db.cursor() as cur:
+        cur.execute('''
+            SELECT id, name
+            FROM board
+            ORDER BY id
+        ''')
+
+        boards = []
+
+        for board in cur.fetchall():
+            cur.execute('''
+                SELECT id, name
+                FROM post
+                WHERE board_id = %s
+                ORDER BY ts DESC
+                LIMIT 10
+            ''', [board['id']])
+
+            boards.append([board, cur.fetchall()])
+
+    return render_template('index.html', boards=boards)
 
 @app.route('/login/', methods=['POST'])
 def login():

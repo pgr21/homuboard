@@ -3,3 +3,16 @@
 {% block title %}
 Main Page
 {% endblock %}
+
+{% block body %}
+
+{% for board, posts in boards %}
+<a class="board_name" href="{{url_for('board', id=board.id)}}">{{board.name}}</a>
+<div class="recent_posts">
+    {% for post in posts %}
+    <a class="post_name" href="{{url_for('post', id=post.id)}}">{{post.name}}</a><br>
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% endblock %}
