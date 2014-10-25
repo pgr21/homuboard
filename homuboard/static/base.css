@@ -45,6 +45,10 @@ h1 {
     margin-bottom: 5px;
 }
 
+.board_list {
+    line-height: 150%;
+}
+
 #body {
     padding-left: 110px;
 }

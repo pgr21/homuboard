@@ -4,10 +4,33 @@ from .db import db
 from .mysql import mysql323
 from .user import user
 from datetime import datetime
+from jinja2 import Markup
+
+board_list = None
+def load_board_list():
+    global board_list
+
+    if not board_list:
+        with db.cursor() as cur:
+            cur.execute('''
+                SELECT id, name
+                FROM board
+            ''')
+
+            board_list = Markup('\n'.join(
+                '<a href="{}">{}</a><br>'.format(
+                    url_for('board', id=board['id']),
+                    board['name'],
+                ) for board in cur))
+
+    return board_list
 
 @app.context_processor
 def inject_env():
-    return {'site_name': app.config['SITE_NAME']}
+    return {
+        'site_name': app.config['SITE_NAME'],
+        'board_list': load_board_list(),
+    }
 
 @app.route('/')
 def index():
