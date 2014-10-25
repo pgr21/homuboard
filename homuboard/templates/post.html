@@ -1,43 +1,47 @@
 {% extends 'base.html' %}
 
+{% block title %}
+{{post.name}}
+{% endblock %}
+
 {% block body %}
 
-<table>
+<table class="metadata">
     <tr>
         <th>Date</th>
-        <td>{{post.ts}}</td>
+        <td><span class="ts">{{post.ts}}</span></td>
     </tr>
     <tr>
         <th>User</th>
-        <td>{{post.user_name}}</td>
+        <td><span class="user_name">{{post.user_name}}</span></td>
     </tr>
     <tr>
         <th>Title</th>
-        <td>{{post.name}}</td>
+        <td><span class="name">{{post.name}}</span></td>
     </tr>
 </table>
 
-<div class="post">
-    {{post.text|nl2br}}
+<div class="tools">
+    {% if post.user_id == user.id %}
+    <a href="{{url_for('post_edit', id=post.id)}}">Edit</a>
+    {% endif %}
 </div>
 
-{% if post.user_id == user.id %}
-<div class="tools">
-    <a href="{{url_for('post_edit', id=post.id)}}">Edit</a>
+<div class="post">
+    <span class="text">{{post.text|nl2br}}</span>
 </div>
-{% endif %}
 
 {% for comm in comms %}
 {{comm.html|safe}}
 <div class="comm">
     <p>
-        by {{comm.user_name}} at {{comm.ts}}
+        by <span class="user_name">{{comm.user_name}}</span> at <span class="ts">{{comm.ts}}</span>
         / <a href="{{url_for('comm_edit', post_id=post.id, parent_id=comm.id)}}">Reply</a>
         {% if comm.user_id == user.id %}
         / <a href="{{url_for('comm_edit', id=comm.id)}}">Edit</a>
         {% endif %}
     </p>
-    {{comm.text|nl2br}}
+    <span class="text">{{comm.text|nl2br}}</span>
 </div>
 {% endfor %}
 {{comms_html|safe}}

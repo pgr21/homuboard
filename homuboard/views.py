@@ -44,6 +44,18 @@ def logout():
 def board(id):
     with db.cursor() as cur:
         cur.execute('''
+            SELECT id, name
+            FROM board
+            WHERE id = %s
+        ''', [id])
+
+        board = cur.fetchone()
+
+        if not board:
+            flash('Board not exists')
+            return redirect(url_for('index'))
+
+        cur.execute('''
             SELECT post.id, post.name, "user".name AS user_name, post.ts, views, votes
             FROM post JOIN "user" ON post.user_id = "user".id
             WHERE board_id=%s
@@ -51,10 +63,6 @@ def board(id):
         ''', [id])
 
         posts = cur.fetchall()
-
-    board = {
-        'id': id,
-    }
 
     return render_template('board.html', board=board, posts=posts)
 

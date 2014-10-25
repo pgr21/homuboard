@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{name}}
+{{board.name}}
 {% endblock %}
 
 {% block body %}
 
-<p><a href="{{url_for('post_edit', board_id=board.id)}}">New Post</a></p>
+<h1>{{board.name}}</h1>
 
-<table>
+<table class="board">
     <thead>
         <tr>
             <th>No.</th>
@@ -24,7 +24,7 @@
         <tr>
             <td>{{post.id}}</td>
             <td><a href="{{url_for('post', id=post.id)}}">{{post.name}}</a></td>
-            <td>{{post.user_name}}</td>
+            <td><span class="user_name">{{post.user_name}}</span></td>
             <td>{{post.ts}}</td>
             <td>{{post.views}}</td>
             <td>{{post.votes}}</td>
@@ -32,5 +32,9 @@
 {% endfor %}
     </tbody>
 </table>
+
+<div class="tools">
+    <a href="{{url_for('post_edit', board_id=board.id)}}">New Post</a>
+</div>
 
 {% endblock %}
